@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.mapper.RolePermissionMapper">
+
+    <sql id="columns">
+		select id, role_id, permission_id, create_time, update_time, is_deleted
+        from
+                acl_role_permission
+	</sql>
+    <select id="findAllByRoleId" resultType="long">
+        select permission_id
+            from acl_role_permission
+        where role_id = #{roleId} and
+              is_deleted = 0
+    </select>
+
+    <select id="findPermissByAdminId" resultType="permission">
+        SELECT acl.*,aar.`role_id`
+        FROM acl_admin_role aar
+        LEFT JOIN acl_role_permission arp ON aar.role_id = arp.role_id
+        LEFT JOIN acl_permission acl ON acl.id = arp.`permission_id`
+        WHERE aar.`admin_id` = #{adminId} AND
+        aar.`is_deleted` = 0 AND
+        arp.`is_deleted` = 0 AND
+        acl.`is_deleted` = 0 AND
+        acl.`type` = 1
+    </select>
+</mapper>
